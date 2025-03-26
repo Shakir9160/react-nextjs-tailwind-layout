@@ -108,7 +108,7 @@ const Timer = ({ location }) => {
             )}
 
             {/* TIMER LOGS */}
-            <div className="mt-4 mb-4 bg-gray-200 dark:bg-gray-700 px-5 py-3 rounded max-h-36 overflow-auto">
+            <div className="mt-4 mb-4 bg-gray-100 dark:bg-gray-700 px-5 py-3 rounded max-h-36 overflow-auto">
                 <h3 className="text-sm font-bold">Timer Logs</h3>
                 
                 {logs.length > 0 ? (
