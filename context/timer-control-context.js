@@ -9,7 +9,7 @@ export const TimerControlProvider = ({ children }) => {
   const isAllRunning = Object.values(timers).every(({ running }) => running);
 
   const registerTimer = (location, timerFunctions) => {
-    setTimers((prev) => ({ ...prev, [location]: timerFunctions }));
+    setTimers((prev) => ({ ...prev, [location]: { ...timerFunctions } }));
   };
 
   const unregisterTimer = (location) => {
