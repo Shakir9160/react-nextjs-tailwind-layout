@@ -4,6 +4,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}"  // If using Next.js App Router
   ],
+  darkMode: 'class', // Enables class-based dark mode
   theme: {
     extend: {},
   },
