@@ -21,26 +21,53 @@ export const TimerControlProvider = ({ children }) => {
   };
 
   const updateTimerState = (location, running) => {
-    setTimers((prev) => ({ ...prev, [location]: { ...prev[location], running }, }));
+    setTimers((prev) => ({ ...prev, [location]: { ...prev[location], running } }));
+  };
+
+  // 🔹 Function to add logs and persist them
+  const addLogToTimer = (location, message, setLogs) => {
+    setTimers((prevTimers) => {
+        const prevLogs = prevTimers[location]?.logs || [];
+        const newLog = `${new Date().toLocaleTimeString()} - ${message}`;
+        const updatedLogs = [...prevLogs, newLog];
+
+        // 🔹 Store logs in state to force UI update
+        setLogs(updatedLogs);
+
+        // 🔹 Store logs in localStorage
+        localStorage.setItem(`logs-${location}`, JSON.stringify(updatedLogs));
+
+        return { ...prevTimers, [location]: {  ...prevTimers[location], logs: updatedLogs }, };
+    });
   };
 
   const controlAllTimers = (action) => {
-    Object.entries(timers).forEach(([location, { setRunning, setSeconds }]) => {
+    Object.entries(timers).forEach(([location, { setRunning, setSeconds, clearLog, setLogs }]) => {
       setTimeout(() => {
+        let logMessage = "";
+
         if (action === "start") {
           setRunning(true);
           updateTimerState(location, true);
+          logMessage = "Started";
         }
 
         if (action === "stop") {
           setRunning(false);
           updateTimerState(location, false);
+          logMessage = "Stopped";
         }
 
         if (action === "reset") {
           setSeconds(0);
           setRunning(false);
           updateTimerState(location, false);
+          clearLog();
+        }
+
+        // 🔹 Add logs to the timer
+        if (logMessage) {
+          addLogToTimer(location, logMessage, setLogs);
         }
       }, 0);
     });
