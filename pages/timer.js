@@ -12,7 +12,7 @@ const Timer = ({ location }) => {
         registerTimer(location, { setRunning, setSeconds, clearLog, setLogs, setMode, setInitialSeconds, setIsCountdown});
 
         return () => unregisterTimer(location);
-    }, []);
+    }, [location, registerTimer, unregisterTimer]);
 
     const handleToggle = () => {
         setRunning(!running);

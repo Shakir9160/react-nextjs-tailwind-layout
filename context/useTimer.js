@@ -26,7 +26,7 @@ const useTimer = (location) => {
             setMode(savedMode);
             setIsCountdown(savedCountdown);
         }
-    }, [isClient, location]);
+    }, [location]);
 
     useEffect(() => {
         if (isClient) {
@@ -34,13 +34,13 @@ const useTimer = (location) => {
             localStorage.setItem(`mode-${location}`, mode);
             localStorage.setItem(`countdown-${location}`, JSON.stringify(isCountdown));
         }
-    }, [seconds, mode, isClient, location]);
+    }, [seconds, mode, location]);
 
     useEffect(() => {
         if (isClient) {
             localStorage.setItem(`logs-${location}`, JSON.stringify(logs));
         }
-    }, [logs, isClient, location]);
+    }, [logs, location]);
 
     useEffect(() => {
         let interval;
