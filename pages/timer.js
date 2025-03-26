@@ -3,11 +3,11 @@ import { TimerControlContext } from '../context/timer-control-context';
 import useTimer from "../context/useTimer";
 
 const Timer = ({ location }) => {
-    const { seconds, running, setRunning, setSeconds, logs, setLogs, clearLog, clearSingleLog } = useTimer(location);
+    const { seconds, running, setRunning, setSeconds, logs, setLogs, clearLog, clearSingleLog, mode, setMode, initialSeconds, setInitialSeconds, isCountdown, setIsCountdown } = useTimer(location);
     const { registerTimer, unregisterTimer, controlAllTimers, isAllRunning, updateTimerState } = useContext(TimerControlContext);
 
     useEffect(() => {
-        registerTimer(location, { setRunning, setSeconds, clearLog, setLogs });
+        registerTimer(location, { setRunning, setSeconds, clearLog, setLogs, setMode, setInitialSeconds, setIsCountdown});
 
         return () => unregisterTimer(location);
     }, []);
@@ -20,6 +20,16 @@ const Timer = ({ location }) => {
         setLogs((prev) => [...prev, `${new Date().toLocaleTimeString()} - ${action}`]);
     };
 
+    const handleSetCountdown = () => {
+        const time = initialSeconds === 0 ? parseInt(prompt("Enter countdown time in seconds:", "30"), 10) : initialSeconds;
+
+        if (!isNaN(time) && time > 0) {
+            setSeconds(time);
+            setIsCountdown(true);
+            setRunning(false); // Ensure countdown starts fresh
+        }
+    };
+
     const formatTime = () => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
@@ -30,6 +40,44 @@ const Timer = ({ location }) => {
 
     return (
         <div className="my-5 flex flex-col items-center space-y-2 bg-gray-100 p-4 rounded-md">
+            {/* Mode Switcher */}
+            <div className="mt-1.5 mb-5">
+                <button 
+                    className={`px-${location === "main" ? 4 : 2} py-2 ${mode === "timer" ? "bg-blue-500" : "bg-gray-500"} text-white rounded`} 
+                    onClick={() => setMode("timer")}
+                >
+                    Timer
+                </button>
+                
+                <button 
+                    className={`ml-2 px-${location === "main" ? 4 : 2} py-2 ${mode === "countdown" ? "bg-blue-500" : "bg-gray-500"} text-white rounded`} 
+                    onClick={() => setMode("countdown")}
+                >
+                    Countdown
+                </button>
+            </div>
+
+            {/* Countdown Input */}
+            {mode === "countdown" && (
+                <div className="mt-3">
+                    <input
+                        type="number"
+                        min="1"
+                        placeholder="Enter seconds"
+                        className="mb-5 p-2 border rounded"
+                        onChange={(e) => setInitialSeconds(parseInt(e.target.value) || 0)}
+                    />
+
+                    <button 
+                        className="ml-2 p-2 bg-blue-500 text-white rounded"
+                        onClick={handleSetCountdown}
+                        disabled={isCountdown && running}
+                    >
+                        Set Countdown
+                    </button>
+                </div>
+            )}
+
             <div className="mb-2 text-lg font-semibold text-black">{formatTime()}</div>
 
             <div className="flex space-x-2">
@@ -43,7 +91,7 @@ const Timer = ({ location }) => {
             </div>
             
             {/* SHOW CONTROL BUTTONS ONLY IN MAIN CONTENT */}
-            {location === "main" && (
+            {location === "main" && mode === "timer" && (
                 <div className="mt-4 flex space-x-2">
                     <button className={`mb-5 px-4 py-2 ${isAllRunning ? "bg-red-500" : "bg-green-500"} text-white rounded`} onClick={() => controlAllTimers(isAllRunning ? "stop" : "start")}>
                         {isAllRunning ? "Stop All" : "Start All"}
